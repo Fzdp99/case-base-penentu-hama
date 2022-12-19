@@ -1,0 +1,62 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "API CaseBase Reasoning Penentu hama dan pestisida tanaman padi",
+		"version": "0.0.1",
+		"description": "[ pertumbuhan = t0 , t1 , t2 , t3 , t4 , t5 , t6 , t7 , t8 , t9 ]===[ varietas = ir-64 , ciherang , inpari-23 , cingelis ]===[ musim = panas , hujan ]===[ kondisi_daun = normal , kuning , bintik , habis ]===[ kondisi_buah = normal , bintik , habis , hampa ]===[ kondisi_batang = normal , layu , habis ]===[ kondisi_anakan = normal , sedikit ]===[ kondisi_fisik = normal , kerdil ]===[ hama = wareng hijau, ulat gerayak, hama putih , walang sangit , tikus , keong emas , penggerek batang , kepinding tanah]===[ harga = hrg1 , hrg2 , hrg3 , hrg4 , hrg5 , hrg6]" 
+	},
+	"paths": {
+		"/casebase-penentu-hama": {
+			"post": {
+				"tags": ["Hama"],
+				"summary": "Penentu hama",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+                                    "pertumbuhan": { "type": "string", "example": "t3" },
+                                    "varietas": { "type": "string", "example": "inpari-23" },
+                                    "musim": { "type": "string", "example": "panas" },
+                                    "kondisi_daun": { "type": "string", "example": "normal" },
+                                    "kondisi_buah": { "type": "string", "example": "normal" },
+                                    "kondisi_batang": { "type": "string", "example": "layu" },
+                                    "kondisi_anakan": { "type": "string", "example": "sedikit" },
+                                    "kondisi_fisik": { "type": "string", "example": "kerdil" }
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": { "description": "succsess" },
+					"400": { "description": "FAIL" }
+				}
+			}
+		},
+		"/casebase-penentu-pestisida": {
+			"post": {
+				"tags": ["Pestisida"],
+				"summary": "Penentu pestisida",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+                                    "hama": { "type": "string", "example": "wareng hijau" },
+                                    "harga": { "type": "string", "example": "hrg1" }
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": { "description": "succsess" },
+					"400": { "description": "FAIL" }
+				}
+			}
+		}
+	}
+}
