@@ -9,9 +9,11 @@ module.exports = {
     const bobot = await Bobot.bobotKriteriaHama();
     const indexDataBaru = await this.penentuIndex(req);
     var hasil = await this.perhitunganData(dataLama, bobot, indexDataBaru);
-    hasil.sort((a, b) => b.kedekatan - a.kedekatan);
+    hasil.sort(
+      (a, b) => b.kedekatan_metode_jaccard - a.kedekatan_metode_jaccard
+    );
     hasil = [hasil[0], hasil[1], hasil[2], hasil[3], hasil[4]];
-    if (hasil[0].kedekatan !== 1) {
+    if (hasil[0].kedekatan_metode_jaccard !== 1) {
       const saveData = {
         ...req,
         pestisida: hasil[0].pestisida,
@@ -43,12 +45,14 @@ module.exports = {
         indexDataBaru,
         indexDataLama
       );
-      const nilaiSimilarity = await this.knn(nilaiKedekatan, bobot);
+      const nilaiSimilarityJ = await this.metode1(nilaiKedekatan, bobot);
+      const nilaiSimilarityE = await this.metode2(nilaiKedekatan, bobot);
       const newData = {
         hama: dataLama[i].hama,
         harga: dataLama[i].harga,
         pestisida: dataLama[i].pestisida,
-        kedekatan: nilaiSimilarity,
+        kedekatan_metode_jaccard: nilaiSimilarityJ,
+        kedekatan_metode_ecludiean: nilaiSimilarityE,
       };
       hasilSimilarity.push(newData);
     }
@@ -70,7 +74,7 @@ module.exports = {
     };
   },
 
-  knn(nilaiKedekatan, bobot) {
+  metode2(nilaiKedekatan, bobot) {
     const ecludiean = Math.sqrt(
       Math.pow(nilaiKedekatan.hama - bobot.hama_penyerang, 2) +
         Math.pow(nilaiKedekatan.harga - bobot.harga_pestisida, 2)
@@ -78,11 +82,11 @@ module.exports = {
     return ecludiean;
   },
 
-  // async perhitunganSimilarity(nilaiKedekatan, bobot) {
-  //   const nilai1 =
-  //     nilaiKedekatan.hama * bobot.hama_penyerang +
-  //     nilaiKedekatan.harga * bobot.harga_pestisida;
-  //   const nilai2 = bobot.hama_penyerang + bobot.harga_pestisida;
-  //   return nilai1 / nilai2;
-  // },
+  async metode1(nilaiKedekatan, bobot) {
+    const nilai1 =
+      nilaiKedekatan.hama * bobot.hama_penyerang +
+      nilaiKedekatan.harga * bobot.harga_pestisida;
+    const nilai2 = bobot.hama_penyerang + bobot.harga_pestisida;
+    return nilai1 / nilai2;
+  },
 };

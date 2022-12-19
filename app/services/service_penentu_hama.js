@@ -9,9 +9,11 @@ module.exports = {
     const bobot = await Bobot.bobotKriteriaTumbuhan();
     const indexDataBaru = await this.penentuIndex(req);
     let hasil = await this.perhitunganData(dataLama, bobot, indexDataBaru);
-    hasil.sort((a, b) => b.kedekatan - a.kedekatan);
+    hasil.sort(
+      (a, b) => b.kedekatan_metode_jaccard - a.kedekatan_metode_jaccard
+    );
     hasil = [hasil[0], hasil[1], hasil[2], hasil[3], hasil[4]];
-    if (hasil[0].kedekatan !== 1) {
+    if (hasil[0].kedekatan_metode_jaccard !== 1) {
       const saveData = {
         ...req,
         hama: hasil[0].hama,
@@ -33,7 +35,8 @@ module.exports = {
         indexDataBaru,
         indexDataLama
       );
-      const nilaiSimilarity = await this.knn(nilaiKedekatan, bobot);
+      const nilaiSimilarityJ = await this.metode1(nilaiKedekatan, bobot);
+      const nilaiSimilarityE = await this.metode2(nilaiKedekatan, bobot);
       const newData = {
         pertumbuhan: dataLama[i].pertumbuhan,
         varietas: dataLama[i].varietas,
@@ -44,14 +47,15 @@ module.exports = {
         kondisi_anakan: dataLama[i].kondisi_anakan,
         kondisi_fisik: dataLama[i].kondisi_fisik,
         hama: dataLama[i].hama,
-        kedekatan: nilaiSimilarity,
+        kedekatan_metode_jaccard: nilaiSimilarityJ,
+        kedekatan_metode_ecludiean: nilaiSimilarityE,
       };
       hasilSimilarity.push(newData);
     }
     return hasilSimilarity;
   },
 
-  knn(nilaiKedekatan, bobot) {
+  metode2(nilaiKedekatan, bobot) {
     const ecludiean = Math.sqrt(
       Math.pow(nilaiKedekatan.pertumbuhan - bobot.pertumbuhan, 2) +
         Math.pow(nilaiKedekatan.varietas - bobot.varietas, 2) +
@@ -65,27 +69,27 @@ module.exports = {
     return ecludiean;
   },
 
-  // async perhitunganSimilarity(nilaiKedekatan, bobot) {
-  //   const nilai1 =
-  //     nilaiKedekatan.pertumbuhan * bobot.pertumbuhan +
-  //     nilaiKedekatan.varietas * bobot.varietas +
-  //     nilaiKedekatan.musim * bobot.musim +
-  //     nilaiKedekatan.kondisi_daun * bobot.kondisi_daun +
-  //     nilaiKedekatan.kondisi_buah * bobot.kondisi_buah +
-  //     nilaiKedekatan.kondisi_batang * bobot.kondisi_batang +
-  //     nilaiKedekatan.kondisi_anakan * bobot.kondisi_anakan +
-  //     nilaiKedekatan.kondisi_fisik * bobot.kondisi_fisik;
-  //   const nilai2 =
-  //     bobot.pertumbuhan +
-  //     bobot.varietas +
-  //     bobot.musim +
-  //     bobot.kondisi_daun +
-  //     bobot.kondisi_buah +
-  //     bobot.kondisi_batang +
-  //     bobot.kondisi_anakan +
-  //     bobot.kondisi_fisik;
-  //   return nilai1 / nilai2;
-  // },
+  async metode1(nilaiKedekatan, bobot) {
+    const nilai1 =
+      nilaiKedekatan.pertumbuhan * bobot.pertumbuhan +
+      nilaiKedekatan.varietas * bobot.varietas +
+      nilaiKedekatan.musim * bobot.musim +
+      nilaiKedekatan.kondisi_daun * bobot.kondisi_daun +
+      nilaiKedekatan.kondisi_buah * bobot.kondisi_buah +
+      nilaiKedekatan.kondisi_batang * bobot.kondisi_batang +
+      nilaiKedekatan.kondisi_anakan * bobot.kondisi_anakan +
+      nilaiKedekatan.kondisi_fisik * bobot.kondisi_fisik;
+    const nilai2 =
+      bobot.pertumbuhan +
+      bobot.varietas +
+      bobot.musim +
+      bobot.kondisi_daun +
+      bobot.kondisi_buah +
+      bobot.kondisi_batang +
+      bobot.kondisi_anakan +
+      bobot.kondisi_fisik;
+    return nilai1 / nilai2;
+  },
 
   async penentuIndex(data) {
     const pertumbuhan = await Index.indexPertumbuhan(
