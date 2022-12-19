@@ -32,7 +32,7 @@ module.exports = {
         indexDataBaru,
         indexDataLama
       );
-      const nilaiSimilarity = await this.knn(nilaiKedekatan, bobot);
+      const nilaiSimilarity = await this.perhitunganSimilarity(nilaiKedekatan, bobot);
       const newData = {
         pertumbuhan: dataLama[i].pertumbuhan,
         varietas: dataLama[i].varietas,
@@ -50,41 +50,41 @@ module.exports = {
     return hasilSimilarity;
   },
 
-  knn(nilaiKedekatan, bobot) {
-    const ecludiean = Math.sqrt(
-      Math.pow(nilaiKedekatan.pertumbuhan - bobot.pertumbuhan, 2) +
-        Math.pow(nilaiKedekatan.varietas - bobot.varietas, 2) +
-        Math.pow(nilaiKedekatan.musim - bobot.musim, 2) +
-        Math.pow(nilaiKedekatan.kondisi_daun - bobot.kondisi_daun, 2) +
-        Math.pow(nilaiKedekatan.kondisi_buah - bobot.kondisi_buah, 2) +
-        Math.pow(nilaiKedekatan.kondisi_batang - bobot.kondisi_batang, 2) +
-        Math.pow(nilaiKedekatan.kondisi_anakan - bobot.kondisi_anakan, 2) +
-        Math.pow(nilaiKedekatan.kondisi_fisik - bobot.kondisi_fisik, 2)
-    );
-    return ecludiean;
-  },
+//   knn(nilaiKedekatan, bobot) {
+//     const ecludiean = Math.sqrt(
+//       Math.pow(nilaiKedekatan.pertumbuhan - bobot.pertumbuhan, 2) +
+//         Math.pow(nilaiKedekatan.varietas - bobot.varietas, 2) +
+//         Math.pow(nilaiKedekatan.musim - bobot.musim, 2) +
+//         Math.pow(nilaiKedekatan.kondisi_daun - bobot.kondisi_daun, 2) +
+//         Math.pow(nilaiKedekatan.kondisi_buah - bobot.kondisi_buah, 2) +
+//         Math.pow(nilaiKedekatan.kondisi_batang - bobot.kondisi_batang, 2) +
+//         Math.pow(nilaiKedekatan.kondisi_anakan - bobot.kondisi_anakan, 2) +
+//         Math.pow(nilaiKedekatan.kondisi_fisik - bobot.kondisi_fisik, 2)
+//     );
+//     return ecludiean;
+//   },
 
-  // async perhitunganSimilarity(nilaiKedekatan, bobot) {
-  //   const nilai1 =
-  //     nilaiKedekatan.pertumbuhan * bobot.pertumbuhan +
-  //     nilaiKedekatan.varietas * bobot.varietas +
-  //     nilaiKedekatan.musim * bobot.musim +
-  //     nilaiKedekatan.kondisi_daun * bobot.kondisi_daun +
-  //     nilaiKedekatan.kondisi_buah * bobot.kondisi_buah +
-  //     nilaiKedekatan.kondisi_batang * bobot.kondisi_batang +
-  //     nilaiKedekatan.kondisi_anakan * bobot.kondisi_anakan +
-  //     nilaiKedekatan.kondisi_fisik * bobot.kondisi_fisik;
-  //   const nilai2 =
-  //     bobot.pertumbuhan +
-  //     bobot.varietas +
-  //     bobot.musim +
-  //     bobot.kondisi_daun +
-  //     bobot.kondisi_buah +
-  //     bobot.kondisi_batang +
-  //     bobot.kondisi_anakan +
-  //     bobot.kondisi_fisik;
-  //   return nilai1 / nilai2;
-  // },
+  async perhitunganSimilarity(nilaiKedekatan, bobot) {
+    const nilai1 =
+      nilaiKedekatan.pertumbuhan * bobot.pertumbuhan +
+      nilaiKedekatan.varietas * bobot.varietas +
+      nilaiKedekatan.musim * bobot.musim +
+      nilaiKedekatan.kondisi_daun * bobot.kondisi_daun +
+      nilaiKedekatan.kondisi_buah * bobot.kondisi_buah +
+      nilaiKedekatan.kondisi_batang * bobot.kondisi_batang +
+      nilaiKedekatan.kondisi_anakan * bobot.kondisi_anakan +
+      nilaiKedekatan.kondisi_fisik * bobot.kondisi_fisik;
+    const nilai2 =
+      bobot.pertumbuhan +
+      bobot.varietas +
+      bobot.musim +
+      bobot.kondisi_daun +
+      bobot.kondisi_buah +
+      bobot.kondisi_batang +
+      bobot.kondisi_anakan +
+      bobot.kondisi_fisik;
+    return nilai1 / nilai2;
+  },
 
   async penentuIndex(data) {
     const pertumbuhan = await Index.indexPertumbuhan(
