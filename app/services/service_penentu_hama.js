@@ -10,7 +10,6 @@ module.exports = {
     const indexDataBaru = await this.penentuIndex(req);
     let hasil = await this.perhitunganData(dataLama, bobot, indexDataBaru);
     hasil.sort((a, b) => b.kedekatan - a.kedekatan);
-    hasil = [hasil[0], hasil[1], hasil[2], hasil[3], hasil[4]];
     if (hasil[0].kedekatan !== 1) {
       const saveData = {
         ...req,
